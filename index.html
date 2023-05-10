@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Store and Share HTML in URL Parameters</title>
+	<meta charset="UTF-8">
+</head>
+<body>
+	<form onsubmit="storeHtml(event)">
+		<label for="html">Enter HTML:</label>
+		<textarea name="html" id="html" required></textarea>
+		<button type="submit">Store HTML</button>
+	</form>
+	
+	<h2>Stored HTML</h2>
+	<div id="stored-html"></div>
+	
+	<h2>Share Link</h2>
+	<p>Copy the link below to share your stored HTML with others:</p>
+	<input type="text" id="share-link" readonly>
+	
+	<script>
+		function storeHtml(event) {
+			event.preventDefault(); // Prevent the form from submitting
+			
+			var html = document.getElementById('html').value;
+			var encodedHtml = encodeURIComponent(html);
+			var newUrl = window.location.href.split('?')[0] + '?html=' + encodeURIComponent(encodedHtml);
+			window.history.pushState({path:newUrl},'',newUrl); // Update the URL without reloading the page
+			showStoredHtml();
+			updateShareLink();
+		}
+		
+		function showStoredHtml() {
+			var params = new URLSearchParams(window.location.search);
+			var storedHtml = params.get('html');
+			if (storedHtml) {
+				var decodedHtml = decodeURIComponent(storedHtml);
+				document.getElementById('stored-html').innerHTML = decodedHtml;
+			} else {
+				document.getElementById('stored-html').innerHTML = '';
+			}
+		}
+		
+		function updateShareLink() {
+			var shareLink = document.getElementById('share-link');
+			shareLink.value = window.location.href;
+		}
+		
+		// Check if there's stored HTML in the URL parameters
+		showStoredHtml();
+		updateShareLink();
+	</script>
+</body>
+</html>
